@@ -72,4 +72,19 @@ function batalhaPokemon (id1, id2) {
     return `${pokemon1.nome}: ${pokemon1.hp} / ${pokemon2.nome}: ${pokemon2.hp}`
 }
 
-module.exports = { salvarPokemon, mostrarPokemon, mostrarListaPokemons,     atualizarPokemon, deletarPokemon, batalhaPokemon }
+function curarPokemon (id) {
+    const pocao = 20;
+    const pokemon = pokemons[id];
+
+    if(pokemon.hp >= 100){
+        return `Pokemon já tem o limite de hp!`
+    } else if (pokemon.hp == 90){
+        pokemon.hp += (pocao - 10);
+    } else {
+        pokemon.hp += pocao;
+    }
+
+    return `${pokemon.nome}: ${pokemon.hp}`;
+}
+
+module.exports = { salvarPokemon, mostrarPokemon, mostrarListaPokemons, atualizarPokemon, deletarPokemon, batalhaPokemon, curarPokemon }
