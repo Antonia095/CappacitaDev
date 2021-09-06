@@ -1,41 +1,74 @@
-const sequence = {
-    _id: 1,
-    get id() {
-        return this._id++;
+const { databaseConnection } = require('./connection');
+
+const pokemons = {}
+
+async function salvarPokemon (pokemon) {
+   
+    const insertPokemon = {
+        nome_pokemon: pokemon.nome,
+        tipo: pokemon.tipo,
+        fraqueza: pokemon.fraqueza,
+        resistencia: pokemon.resistencia
+    }
+
+    const result = await databaseConnection('pokemons').insert(insertPokemon);
+
+    if (result) {
+        return {
+            ...pokemon,
+            id: result[0]
+        }
+    }else {
+        console.error('Deu erro!');
+        return {
+            error: 'Deu erro na inserção.'
+        }
     }
 }
 
-const pokemons = []
+async function mostrarPokemon (id) {
 
-function salvarPokemon (pokemon) {
-    if(!pokemon.id) pokemon.id = sequence.id;
-    pokemons[pokemon.id] = pokemon;
-    return pokemon;
+    const result = await databaseConnection('pokemons').where({ id });
+
+    return result[0];
 }
 
-function mostrarPokemon (id) {
-    return pokemons[id] || {}
+async function mostrarListaPokemons () {
+   
+    const result = await databaseConnection('pokemons');
+
+    return result;
 }
 
-function mostrarListaPokemons () {
-    return Object.values(pokemons);
-}
+async function atualizarPokemon (id, pokemon) {
+   
+    const updatePokemon = {
+        nome_pokemon: pokemon.nome,
+        tipo: pokemon.tipo,
+        fraqueza: pokemon.fraqueza,
+        resistencia: pokemon.resistencia
+    }
 
-function atualizarPokemon (id, pokemon) {
-    pokemons[id] = pokemon;
-    return pokemon;
-}
+    const result = await databaseConnection('pokemons').where({ id }).update(updatePokemon);
 
-function deletarPokemon (id) {
-    sequence._id = sequence._id - 1;
-    const pokemonDeletado = pokemons[id]
-    pokemons.splice(id, 1)
-    pokemons.forEach(pokemon => {
-        if(pokemon.id > id) {
-            pokemon.id = pokemon.id - 1;
+    if (result) {
+        return {
+            ...pokemon,
+            id
         }
-    })
-    return pokemonDeletado;
+    }else {
+        console.error('Deu erro!');
+        return {
+            error: 'Deu erro na inserção.'
+        }
+    }
+}
+
+async function deletarPokemon (id) {
+
+    const result = await databaseConnection('pokemons').where({ id }).del();
+
+    return result[0];
 }
 
 function batalhaPokemon (id1, id2) {
